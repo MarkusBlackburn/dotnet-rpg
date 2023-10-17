@@ -1,3 +1,4 @@
+global using AutoMapper;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,25 +12,33 @@ namespace dotnet_rpg.Services.CharacterService
             new Character(),
             new Character {Id = 1, Name = "Sam"}
         };
-        public async Task<ServiceResponse<List<Character>>> AddCharacter(Character newCharacter)
+        private readonly IMapper _mapper;
+
+        public CharacterService(IMapper mapper)
         {
-            characters.Add(newCharacter);
-            return characters;
+            _mapper = mapper;
+        }
+        public async Task<ServiceResponse<List<GetCharacterDTO>>> AddCharacter(AddCharacterDTO newCharacter)
+        {
+            var ResponseService = new ServiceResponse<List<GetCharacterDTO>>();
+            characters.Add(_mapper.Map<Character>(newCharacter));
+            ResponseService.Data = characters.Select(c => _mapper.Map<GetCharacterDTO>(c)).ToList();
+            return ResponseService;
         }
 
-        public async Task<ServiceResponse<List<Character>>> GetAllCharacters()
+        public async Task<ServiceResponse<List<GetCharacterDTO>>> GetAllCharacters()
         {
-            return characters;
+            var ResponseService = new ServiceResponse<List<GetCharacterDTO>>();
+            ResponseService.Data = characters.Select(c => _mapper.Map<GetCharacterDTO>(c)).ToList();
+            return ResponseService;
         }
 
-        public async Task<ServiceResponse<Character>> GetCharacterById(int id)
+        public async Task<ServiceResponse<GetCharacterDTO>> GetCharacterById(int id)
         {
+            var ResponseService = new ServiceResponse<GetCharacterDTO>();
             var character = characters.FirstOrDefault(c => c.Id == id);
-
-            if(character is not null)
-                return character;
-            
-            throw new Exception("Character not found");
+            ResponseService.Data = _mapper.Map<GetCharacterDTO>(character);
+            return ResponseService;
         }
     }
 }
