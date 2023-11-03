@@ -8,10 +8,6 @@ namespace dotnet_rpg.Services.CharacterService
 {
     public class CharacterService : ICharacterService
     {
-        private static List<Character> characters = new List<Character> {
-            new Character(),
-            new Character {Id = 1, Name = "Sam"}
-        };
         private readonly IMapper _mapper;
         private readonly DataContext _context;
 
@@ -39,13 +35,17 @@ namespace dotnet_rpg.Services.CharacterService
 
             try
             {
-                var character = characters.First(c => c.Id == id);
+                var character = 
+                    await _context.Characters.FirstOrDefaultAsync(c => c.Id == id);
                 if (character is null)
                     throw new Exception($"Character with Id '{id}' not found");
 
-                characters.Remove(character);
+                _context.Characters.Remove(character);
 
-                ResponseService.Data = characters.Select(c => _mapper.Map<GetCharacterDTO>(c)).ToList();
+                await _context.SaveChangesAsync();
+
+                ResponseService.Data = 
+                    await _context.Characters.Select(c => _mapper.Map<GetCharacterDTO>(c)).ToListAsync();
             }
             catch (Exception ex)
             {
@@ -78,7 +78,8 @@ namespace dotnet_rpg.Services.CharacterService
 
             try
             {
-                var character = characters.FirstOrDefault(c => c.Id == updatedCharacter.Id);
+                var character = 
+                    await _context.Characters.FirstOrDefaultAsync(c => c.Id == updatedCharacter.Id);
                 if (character is null)
                     throw new Exception($"Character with Id '{updatedCharacter.Id}' not found");
 
@@ -89,6 +90,7 @@ namespace dotnet_rpg.Services.CharacterService
                 character.Intelligence = updatedCharacter.Intelligence;
                 character.Class = updatedCharacter.Class;
 
+                await _context.SaveChangesAsync();
                 ResponseService.Data = _mapper.Map<GetCharacterDTO>(character);
             }
             catch (Exception ex)
