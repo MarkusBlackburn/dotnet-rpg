@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace dotnet_rpg.Controllers
 {
     [ApiController]
-    [Route("[controller]")]
+    [Route("api/[controller]")]
     public class AuthController : ControllerBase
     {
         private readonly IAuthRepository _authRepo;
