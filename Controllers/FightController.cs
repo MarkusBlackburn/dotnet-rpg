@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using dotnet_rpg.DTOs.Fight;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 
 namespace dotnet_rpg.Controllers
@@ -27,6 +28,18 @@ namespace dotnet_rpg.Controllers
         public async Task<ActionResult<ServiceResponse<AttackResultDto>>> SkillAttack(SkillAtackDto request)
         {
             return Ok(await _fightService.SkillAttack(request));
+        }
+
+        [HttpPost]
+        public async Task<ActionResult<ServiceResponse<FightResultDto>>> Fight(FightRequestDto request)
+        {
+            return Ok(await _fightService.Fight(request));
+        }
+
+        [HttpGet]
+        public async Task<ActionResult<ServiceResponse<List<HighscoreDto>>>> GetHighscore()
+        {
+            return Ok(await _fightService.GetHighscore());
         }
     }
 }
